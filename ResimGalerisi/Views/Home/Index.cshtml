@@ -3,12 +3,31 @@
     ViewData["Title"] = "Resim Galerisi";
 }
 
-<h1>Resim Galerisi</h1>
+<div class="d-flex align-items-center mb-4">
+    <h1 class="me-auto">Resim Galerisi</h1>
+    <div>
+        <form method="get">
+            <div class="input-group">
+                <input asp-for="Ara" type="text" class="form-control"  />
+                <button class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
         <div asp-validation-summary="All"></div>
+    </div>
+}
+
+@if (TempData["mesaj"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["mesaj"]
     </div>
 }
 
@@ -18,16 +37,26 @@
         <input asp-for="Dosya" class="form-control w-auto me-3" type="file">
         <label class="me-2">Başlık:</label>
         <input asp-for="Baslik" class="form-control w-auto me-3" type="text" placeholder="Başlık..">
-        <button class="btn btn-primary">Yükle</button>  
+        <button class="btn btn-primary">Yükle</button>
     </div>
 </form>
 
 <div class="row mt-4">
     @foreach (var item in Model.Resimler)
     {
-        <div class="col-sm-2 text-center mb-3">
-            <img src="~/img/@item.DosyaAd" alt="Resim" height="100" />
-            <h4>@item.Baslik</h4>
+        <div class="col-sm-2 mb-3">
+            <div style="height: 100px">
+                <img src="~/img/@item.DosyaAd" alt="Resim" class="h-100 w-100 mx-auto" style="object-fit: contain" />
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <p class="h6">@item.Baslik</p>
+                <form method="post" asp-action="Sil">
+                    <input type="hidden" name="id" value="@item.Id" />
+                    <button class="btn btn-sm btn-danger">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </form>
+            </div>
         </div>
     }
 </div>

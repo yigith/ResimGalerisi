@@ -17,11 +17,19 @@ namespace ResimGalerisi.Controllers
             _env = env;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? ara)
         {
+            IQueryable<Resim> resimler = _db.Resimler;
+
+            if (!string.IsNullOrEmpty(ara))
+            {
+                resimler = resimler.Where(x => x.Baslik.Contains(ara));
+            }
+
             var vm = new ResimViewModel()
             {
-                Resimler = _db.Resimler.ToList()
+                Resimler = resimler.ToList(),
+                Ara = ara
             };
             return View(vm);
         }
@@ -43,10 +51,30 @@ namespace ResimGalerisi.Controllers
                     DosyaAd = yeniDosyaAd
                 });
                 _db.SaveChanges();
+                TempData["mesaj"] = "Resim başarıyla eklendi.";
                 return RedirectToAction("Index");
             }
             vm.Resimler = _db.Resimler.ToList();
             return View(vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Sil(int id)
+        {
+            var resim = _db.Resimler.Find(id);
+
+            if (resim == null) return NotFound();
+
+            string dosyaYolu = Path.Combine(_env.WebRootPath, "img", resim.DosyaAd);
+
+            if (System.IO.File.Exists(dosyaYolu))
+                System.IO.File.Delete(dosyaYolu);
+
+            _db.Remove(resim);
+            _db.SaveChanges();
+
+            TempData["mesaj"] = "Resim başarıyla silindi.";
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

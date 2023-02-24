@@ -5,6 +5,8 @@ namespace ResimGalerisi.Models
 {
     public class ResimViewModel
     {
+        public string? Ara { get; set; }
+
         [MaxLength(100, ErrorMessage = "{0} en fazla {1} karakterden oluşabilir.")]
         [Display(Name = "Başlık")]
         [Required(ErrorMessage = "{0} alanı zorunludur.")]
